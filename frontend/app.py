@@ -1,12 +1,20 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template
  
+load_dotenv()
+BACKEND_API_URL = os.environ.get("BACKEND_API_URL", "http://127.0.0.1:5001")
+ 
 app = Flask(__name__, static_folder="resources", static_url_path="/resources")
- 
- 
+
 @app.route("/")
-def hello_world():
-    return render_template("index.html", message="Hello, World!")
+def get_index_page():
+    return render_template(
+        "index.html",
+        message="Welcome! MCO Assignment!",
+        backend_api_url=BACKEND_API_URL,
+    )
  
  
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
