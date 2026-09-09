@@ -1,10 +1,12 @@
-import sqlite3
+import sqlite3,logging
 from pathlib import Path
 
 DB_DIR = Path(__file__).parent / "database"
 DB_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = DB_DIR / "stocks_purchase_inventory.db"
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_connection():
     """Return a new SQLite connection with row access by column name."""
@@ -15,7 +17,6 @@ def get_connection():
 
 
 def init_db():
-    """Create tables if they don't already exist."""
     conn = get_connection()
     conn.execute(
         """
@@ -32,6 +33,7 @@ def init_db():
     )
     conn.commit()
     conn.close()
+    logger.info("Initializing database")
 
 
 def row_to_stock_dict(row: sqlite3.Row) -> dict:

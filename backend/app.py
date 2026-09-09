@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -6,6 +8,8 @@ from database import get_connection, init_db, row_to_stock_dict
 app = Flask(__name__)
 CORS(app)
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.errorhandler(404)
 def not_found(e):
@@ -101,6 +105,9 @@ def create_stock():
     new_id = cursor.lastrowid
     row = conn.execute("SELECT * FROM stocks WHERE id = ?", (new_id,)).fetchone()
     conn.close()
+    
+    logger.info("Created stock id=%s", new_id)
+
     return jsonify(row_to_stock_dict(row)), 201
 
 
@@ -144,6 +151,9 @@ def update_stock(stock_id):
     conn.commit()
     updated = conn.execute("SELECT * FROM stocks WHERE id = ?", (stock_id,)).fetchone()
     conn.close()
+    
+    logger.info("Updated stock id=%s", stock_id)
+    
     return jsonify(row_to_stock_dict(updated))
 
 
@@ -158,6 +168,9 @@ def delete_stock(stock_id):
     conn.execute("DELETE FROM stocks WHERE id = ?", (stock_id,))
     conn.commit()
     conn.close()
+    
+    logger.info("Deleted stock id=%s", stock_id)
+    
     return jsonify({"message": f"Stock {stock_id} deleted"})
 
 
