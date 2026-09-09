@@ -1,0 +1,10 @@
+[pytest]
+testpaths = tests
+pythonpath = .
+
+[coverage:run]
+source = .
+omit =
+    tests/*
+    bvenv/*
+    */__pycache__/*
