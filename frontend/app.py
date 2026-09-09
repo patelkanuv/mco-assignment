@@ -1,4 +1,4 @@
-import os
+import os, jsonify
 from dotenv import load_dotenv
 from flask import Flask, render_template
  
@@ -14,7 +14,9 @@ def get_index_page():
         message="Welcome! MCO Assignment!",
         backend_api_url=BACKEND_API_URL,
     )
- 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
  
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True, port=5000)
