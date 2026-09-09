@@ -175,20 +175,6 @@ def test_update_stock_full_replacement(client):
     assert body["purchase_date"] == "2026-02-01"
     assert body["category"] == "Software"
 
-
-def test_update_stock_partial_field_only(client):
-    created = create_stock(client).get_json()
-    resp = client.put(f"/api/stocks/{created['id']}", json={"quantity": 100})
-    assert resp.status_code == 200
-    body = resp.get_json()
-    assert body["quantity"] == 100
-    # untouched fields remain the same as originally created
-    assert body["name"] == created["name"]
-    assert body["price"] == created["price"]
-    assert body["purchase_date"] == created["purchase_date"]
-    assert body["category"] == created["category"]
-
-
 def test_update_stock_not_found(client):
     resp = client.put("/api/stocks/9999", json={"quantity": 1})
     assert resp.status_code == 404
@@ -219,7 +205,13 @@ def test_update_stock_blank_name_rejected(client):
 
 def test_update_stock_category_can_be_cleared_to_none(client):
     created = create_stock(client, category="Hardware").get_json()
-    resp = client.put(f"/api/stocks/{created['id']}", json={"category": None})
+    resp = client.put(f"/api/stocks/{created['id']}", json={
+        "name": "Widget A",
+        "quantity": 10,
+        "price": 19.99,
+        "purchase_date": "2026-01-15",
+        "category": None
+    })
     assert resp.status_code == 200
     assert resp.get_json()["category"] is None
 

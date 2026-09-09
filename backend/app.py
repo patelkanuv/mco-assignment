@@ -26,51 +26,46 @@ def health():
     return jsonify({"status": "ok"})
 
 
-def validate_stock_payload(data, partial=False):
-    """Validate stock fields. If partial=True, only validate fields that are present
-    (used for PATCH-style partial updates via PUT)."""
+def validate_stock_payload(data):
     errors = {}
     cleaned = {}
 
-    if "name" in data or not partial:
-        name = data.get("name")
-        if not name or not str(name).strip():
-            errors["name"] = "'name' is required"
-        else:
-            cleaned["name"] = str(name).strip()
+    name = data.get("name")
+    if not name or not str(name).strip():
+        errors["name"] = "'name' is required"
+    else:
+        cleaned["name"] = str(name).strip()
 
-    if "quantity" in data or not partial:
-        quantity = data.get("quantity")
-        if quantity is None:
-            errors["quantity"] = "'quantity' is required"
-        else:
-            try:
-                quantity = int(quantity)
-                if quantity < 0:
-                    raise ValueError
-                cleaned["quantity"] = quantity
-            except (TypeError, ValueError):
-                errors["quantity"] = "'quantity' must be a non-negative integer"
+    
+    quantity = data.get("quantity")
+    if quantity is None:
+        errors["quantity"] = "'quantity' is required"
+    else:
+        try:
+            quantity = int(quantity)
+            if quantity < 0:
+                raise ValueError
+            cleaned["quantity"] = quantity
+        except (TypeError, ValueError):
+            errors["quantity"] = "'quantity' must be a non-negative integer"
 
-    if "price" in data or not partial:
-        price = data.get("price")
-        if price is None:
-            errors["price"] = "'price' is required"
-        else:
-            try:
-                price = float(price)
-                if price < 0:
-                    raise ValueError
-                cleaned["price"] = price
-            except (TypeError, ValueError):
-                errors["price"] = "'price' must be a non-negative number"
+    price = data.get("price")
+    if price is None:
+        errors["price"] = "'price' is required"
+    else:
+        try:
+            price = float(price)
+            if price < 0:
+                raise ValueError
+            cleaned["price"] = price
+        except (TypeError, ValueError):
+            errors["price"] = "'price' must be a non-negative number"
 
-    if "purchase_date" in data or not partial:
-        purchase_date = data.get("purchase_date")
-        if not purchase_date:
-            errors["purchase_date"] = "'purchase_date' is required"
-        else:
-            cleaned["purchase_date"] = purchase_date
+    purchase_date = data.get("purchase_date")
+    if not purchase_date:
+        errors["purchase_date"] = "'purchase_date' is required"
+    else:
+        cleaned["purchase_date"] = purchase_date
 
     if "category" in data:
         cleaned["category"] = data.get("category")
@@ -92,7 +87,7 @@ def create_stock():
     if not data:
         return jsonify({"error": "Request body must be JSON"}), 400
 
-    cleaned, errors = validate_stock_payload(data, partial=False)
+    cleaned, errors = validate_stock_payload(data)
     if errors:
         return jsonify({"error": next(iter(errors.values())), "fields": errors}), 400
 
@@ -133,7 +128,7 @@ def update_stock(stock_id):
         conn.close()
         return jsonify({"error": "Stock not found"}), 404
 
-    cleaned, errors = validate_stock_payload(data, partial=True)
+    cleaned, errors = validate_stock_payload(data)
     if errors:
         conn.close()
         return jsonify({"error": next(iter(errors.values())), "fields": errors}), 400
