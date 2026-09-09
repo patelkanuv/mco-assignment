@@ -44,6 +44,104 @@ body {
     display: none;
 }
 
+.list-container {
+    max-width: 900px;
+    width: 100%;
+    padding: 2rem 2.5rem;
+    text-align: left;
+}
+
+.list-container.hidden {
+    display: none;
+}
+
+.list-container h2 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.back-link {
+    background: transparent;
+    color: #764ba2;
+    border: none;
+    padding: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    box-shadow: none;
+}
+
+.back-link:hover {
+    background: transparent;
+    color: #667eea;
+    transform: none;
+    text-decoration: underline;
+}
+
+.close-bottom-btn {
+    width: 100%;
+    margin-top: 1rem;
+    background: #eee;
+    color: #555;
+}
+
+.close-bottom-btn:hover {
+    background: #e2e2e2;
+    color: #333;
+    transform: none;
+}
+
+.actions-cell {
+    white-space: nowrap;
+}
+
+.row-btn {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-right: 0.35rem;
+    box-shadow: none;
+    transition: opacity 0.2s ease;
+}
+
+.row-btn:hover {
+    transform: none;
+    opacity: 0.85;
+}
+
+.edit-btn,
+.save-btn {
+    background: #764ba2;
+    color: #ffffff;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: #ffffff;
+}
+
+.cancel-btn {
+    background: #eee;
+    color: #555;
+}
+
+.edit-input {
+    width: 100%;
+    min-width: 70px;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
 .container {
     background: #ffffff;
     padding: 3rem 4rem;
@@ -150,9 +248,11 @@ button:hover {
 
 .stock-table {
     width: 100%;
+    min-width: 640px;
     margin-top: 1.5rem;
     border-collapse: collapse;
     font-size: 0.85rem;
+    table-layout: fixed;
 }
 
 .stock-table.hidden {

@@ -7,11 +7,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1 class="page-title">{{ message }}</h1>
-
+    <h1 class="page-title" id="homeTop">{{ message }}</h1>
+    
     <button id="addStockToggleBtn" class="toggle-btn">Add Stock</button>
 
+    <div class="container list-container hidden" id="stockListContainer">
+        <h2>Current Inventory</h2>
+        <div class="table-scroll">
+        <table id="stockTable" class="stock-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Purchase Date</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody"></tbody>
+        </table>
+        </div>
+    </div>
+
+
     <div class="container form-container hidden" id="stockPanel">
+        <button type="button" id="backToHomeBtn" class="back-link">&larr; Back to Home</button>
+
         <h2>Add Stock</h2>
         <p class="subtitle">Add a new item to inventory.</p>
 
@@ -46,18 +68,7 @@
 
         <div id="stockFormStatus" class="status-message"></div>
 
-        <table id="stockTable" class="stock-table hidden">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Purchase Date</th>
-                    <th>Category</th>
-                </tr>
-            </thead>
-            <tbody id="stockTableBody"></tbody>
-        </table>
+        <button type="button" id="closeStockPanelBtn" class="close-bottom-btn">Close</button>
     </div>
 
     <script>
