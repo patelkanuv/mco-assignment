@@ -23,6 +23,8 @@ def health():
 
 
 def validate_stock_payload(data, partial=False):
+    """Validate stock fields. If partial=True, only validate fields that are present
+    (used for PATCH-style partial updates via PUT)."""
     errors = {}
     cleaned = {}
 
@@ -161,4 +163,4 @@ def delete_stock(stock_id):
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, port=5001)
+    app.run(host="0.0.0.0", debug=True, port=5001)

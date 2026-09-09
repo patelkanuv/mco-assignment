@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: ./backend
+    container_name: stock_backend
+    ports:
+      - "5001:5001"
+    volumes:
+      - backend_db:/app/database
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: stock_frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - BACKEND_API_URL=http://localhost:5001
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_db:
