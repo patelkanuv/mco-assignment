@@ -1,6 +1,6 @@
-import os, jsonify
+import os
 from dotenv import load_dotenv
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
  
 load_dotenv()
 BACKEND_API_URL = os.environ.get("BACKEND_API_URL", "http://127.0.0.1:5001")
