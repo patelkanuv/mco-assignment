@@ -51,7 +51,7 @@ jobs:
       - name: Static code security scan (Bandit)
         run: |
           pip install bandit
-          bandit -r . -x ./tests,./venv,./.venv
+          bandit -r . -x ./tests,./venv,./.venv -lll
 
   backend-build:
     name: Build backend Docker image
@@ -108,7 +108,7 @@ jobs:
         working-directory: frontend
         run: |
           pip install bandit
-          bandit -r . -x ./venv,./.venv
+          bandit -r . -x ./venv,./.venv -lll
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
