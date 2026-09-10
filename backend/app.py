@@ -3,13 +3,16 @@ import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from database import get_connection, init_db, row_to_stock_dict
+from modules.database.sqlitedb import SQLiteDB
 
 app = Flask(__name__)
 CORS(app)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+db = SQLiteDB()
+
 
 @app.errorhandler(404)
 def not_found(e):
@@ -36,7 +39,6 @@ def validate_stock_payload(data):
     else:
         cleaned["name"] = str(name).strip()
 
-    
     quantity = data.get("quantity")
     if quantity is None:
         errors["quantity"] = "'quantity' is required"
@@ -75,10 +77,10 @@ def validate_stock_payload(data):
 
 @app.route("/api/stocks", methods=["GET"])
 def get_stocks():
-    conn = get_connection()
+    conn = db.get_connection()
     rows = conn.execute("SELECT * FROM stocks ORDER BY id DESC").fetchall()
     conn.close()
-    return jsonify([row_to_stock_dict(r) for r in rows])
+    return jsonify([db.row_to_stock_dict(r) for r in rows])
 
 
 @app.route("/api/stocks", methods=["POST"])
@@ -91,7 +93,7 @@ def create_stock():
     if errors:
         return jsonify({"error": next(iter(errors.values())), "fields": errors}), 400
 
-    conn = get_connection()
+    conn = db.get_connection()
     cursor = conn.execute(
         "INSERT INTO stocks (name, quantity, price, purchase_date, category) VALUES (?, ?, ?, ?, ?)",
         (cleaned["name"], cleaned["quantity"], cleaned["price"], cleaned["purchase_date"], cleaned.get("category")),
@@ -100,20 +102,20 @@ def create_stock():
     new_id = cursor.lastrowid
     row = conn.execute("SELECT * FROM stocks WHERE id = ?", (new_id,)).fetchone()
     conn.close()
-    
+
     logger.info("Created stock id=%s", new_id)
 
-    return jsonify(row_to_stock_dict(row)), 201
+    return jsonify(db.row_to_stock_dict(row)), 201
 
 
 @app.route("/api/stocks/<int:stock_id>", methods=["GET"])
 def get_stock(stock_id):
-    conn = get_connection()
+    conn = db.get_connection()
     row = conn.execute("SELECT * FROM stocks WHERE id = ?", (stock_id,)).fetchone()
     conn.close()
     if row is None:
         return jsonify({"error": "Stock not found"}), 404
-    return jsonify(row_to_stock_dict(row))
+    return jsonify(db.row_to_stock_dict(row))
 
 
 @app.route("/api/stocks/<int:stock_id>", methods=["PUT"])
@@ -122,7 +124,7 @@ def update_stock(stock_id):
     if not data:
         return jsonify({"error": "Request body must be JSON"}), 400
 
-    conn = get_connection()
+    conn = db.get_connection()
     row = conn.execute("SELECT * FROM stocks WHERE id = ?", (stock_id,)).fetchone()
     if row is None:
         conn.close()
@@ -146,15 +148,15 @@ def update_stock(stock_id):
     conn.commit()
     updated = conn.execute("SELECT * FROM stocks WHERE id = ?", (stock_id,)).fetchone()
     conn.close()
-    
+
     logger.info("Updated stock id=%s", stock_id)
-    
-    return jsonify(row_to_stock_dict(updated))
+
+    return jsonify(db.row_to_stock_dict(updated))
 
 
 @app.route("/api/stocks/<int:stock_id>", methods=["DELETE"])
 def delete_stock(stock_id):
-    conn = get_connection()
+    conn = db.get_connection()
     row = conn.execute("SELECT * FROM stocks WHERE id = ?", (stock_id,)).fetchone()
     if row is None:
         conn.close()
@@ -163,12 +165,12 @@ def delete_stock(stock_id):
     conn.execute("DELETE FROM stocks WHERE id = ?", (stock_id,))
     conn.commit()
     conn.close()
-    
+
     logger.info("Deleted stock id=%s", stock_id)
-    
+
     return jsonify({"message": f"Stock {stock_id} deleted"})
 
 
 if __name__ == "__main__":
-    init_db()
+    db.init_db()
     app.run(host="0.0.0.0", debug=True, port=5001)
