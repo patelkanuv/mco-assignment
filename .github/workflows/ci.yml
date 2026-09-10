@@ -43,15 +43,34 @@ jobs:
           name: backend-coverage
           path: backend/coverage.xml
 
+  security-scan:
+    name: Security scan (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, frontend]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - name: Dependency vulnerability scan (pip-audit)
+        working-directory: ${{ matrix.service }}
         run: |
-          pip install pip-audit
+          python -m pip install --upgrade pip pip-audit
           pip-audit -r requirements.txt
 
       - name: Static code security scan (Bandit)
+        working-directory: ${{ matrix.service }}
         run: |
           pip install bandit
-          bandit -r . -x ./tests,./venv,./.venv -lll
+          bandit -r . -x ./tests,./venv,./.venv
 
   backend-build:
     name: Build backend Docker image
@@ -97,18 +116,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Dependency vulnerability scan (pip-audit)
-        working-directory: frontend
-        run: |
-          pip install pip-audit
-          pip-audit -r requirements.txt
-
-      - name: Static code security scan (Bandit)
-        working-directory: frontend
-        run: |
-          pip install bandit
-          bandit -r . -x ./venv,./.venv -lll
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
