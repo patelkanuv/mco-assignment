@@ -1,14 +1,13 @@
 import pytest
 
-import database
 import app as app_module
 
 
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
     db_file = tmp_path / "test_stocks.db"
-    monkeypatch.setattr(database, "DB_PATH", db_file)
-    database.init_db()
+    monkeypatch.setattr(app_module.purchase_service.db, "DB_PATH", db_file)
+    app_module.purchase_service.initialize()
 
     app_module.app.config.update(TESTING=True)
     with app_module.app.test_client() as test_client:

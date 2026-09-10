@@ -2,3 +2,4 @@ fvenv
 bvenv
 __pycache__
 backend/database
+backend/.coverage
