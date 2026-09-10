@@ -5,10 +5,8 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 class SQLiteDB:
     def __init__(self):
-        # Project root is two levels up from this file (modules/database/sqlitedb.py -> flask_json_api/)
         project_root = Path(__file__).resolve().parents[2]
         self.DB_DIR = project_root / "database"
         self.DB_DIR.mkdir(parents=True, exist_ok=True)
